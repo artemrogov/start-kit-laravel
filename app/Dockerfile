@@ -1,5 +1,4 @@
-FROM ubuntu:18.04
-ENV DEBIAN_FRONTEND=noninteractive
+FROM php:7.4-fpm
 
 RUN apt-get update
 
@@ -9,7 +8,7 @@ RUN LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
 
 RUN apt-get update
 
-RUN apt-get install -y curl git php7.4-cli php7.4-fpm php7.4-intl php7.4-mysql php7.4-mbstring php7.4-zip php7.4-xml php7.4-pgsql 
+RUN apt-get install -y curl git php7.4-intl php7.4-mysql php7.4-mbstring php7.4-zip php7.4-xml php7.4-pgsql 
 
 RUN apt-get install -y \
     libpng-dev \
@@ -18,15 +17,10 @@ RUN apt-get install -y \
     zip \
     unzip
 
-ARG user
-ARG uid
+WORKDIR /var/www/html/
 
-# Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid $user
-
-RUN usermod -a -G sudo $user
-
-RUN usermod -a -G www-data $user
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
 
 RUN curl -sS https://getcomposer.org/installer | php
 
@@ -34,6 +28,15 @@ RUN mv composer.phar /usr/local/bin/composer
 
 RUN chmod +x /usr/local/bin/composer
 
+# Copy existing application directory contents
+COPY . /var/www/html
+
+# Copy existing application directory permissions
+COPY --chown=www:www . /var/www/html
+
+USER www
+
+# Expose port 9000 and start php-fpm server
 EXPOSE 9000
 
-CMD service php7.4-fpm start
+CMD ["php-fpm"]

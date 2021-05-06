@@ -2,15 +2,11 @@ version: "3.7"
 
 services:
  app:
-    build:
-      args:
-        user: artem
-        uid: 1000
-      context: ./app
+    context: ./app
+    dockerfile: Dockerfile
     container_name: app
-    ports:
-      - 9000:9000
     working_dir: /var/www/html/
+    tty: true
     volumes:
       - ./src/:/var/www/html/
     networks:
