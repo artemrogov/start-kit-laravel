@@ -3,6 +3,9 @@ version: "3.7"
 services:
  app:
     build:
+      args:
+        user: artem
+        uid: 1000
       context: ./app
       dockerfile: Dockerfile
     container_name: app
@@ -22,7 +25,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - www-html:/var/www/html/
+      - ./app/src/:/var/www/html/
       - ./nginx/:/etc/nginx/conf.d/
     networks:
       - application_server

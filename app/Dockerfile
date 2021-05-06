@@ -20,18 +20,23 @@ RUN mv composer.phar /usr/local/bin/composer
 
 RUN chmod +x /usr/local/bin/composer
 
-RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
+ARG user
+ARG uid
+
+# Create system user to run Composer and Artisan Commands
+RUN useradd -G www-data,root -u $uid $user
+
+RUN usermod -a -G sudo $user
+
+RUN usermod -a -G www-data $user
 
 WORKDIR /var/www/html/
 
 # Copy existing application directory contents
-COPY ./src/ /var/www/html
+COPY ./src/ /var/www/html/
 
 # Copy existing application directory permissions
-COPY --chown=www:www ./src/ /var/www/html
-
-USER www
+#COPY --chown=www:www ./src/ /var/www/html
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
