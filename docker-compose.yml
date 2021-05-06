@@ -1,0 +1,56 @@
+version: "3.7"
+
+services:
+ app:
+    build:
+      args:
+        user: artem
+        uid: 1000
+      context: ./app
+    container_name: app
+    ports:
+      - 9000:9000
+    working_dir: /var/www/html/
+    volumes:
+      - ./src/:/var/www/html/
+    networks:
+     - application_server
+
+       
+ nginx:
+    image: nginx:1.19.8-alpine
+    container_name: nginx-1.19.8-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - www-html:/var/www/html/
+      - ./nginx/:/etc/nginx/conf.d/
+    networks:
+      - application_server
+
+
+ db:
+    image: postgres:12.5-alpine
+    restart: unless-stopped
+    container_name: db
+    environment:
+      POSTGRES_DB: artem_db
+      POSTGRES_USER: artem
+      POSTGRES_PASSWORD: artem1990
+    ports:
+      - 5432:5432
+    volumes:
+     - database_data:/var/lib/postgresql/data/
+    networks:
+      - application_server
+
+
+
+networks:
+  application_server:
+    driver: bridge
+
+volumes:
+   database_data:
+   www-html: 
