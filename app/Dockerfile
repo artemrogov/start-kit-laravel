@@ -2,7 +2,7 @@ FROM php:7.4-fpm
 
 USER root
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y nano \
     git \
     curl \
     libpq-dev \
@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip
-
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
